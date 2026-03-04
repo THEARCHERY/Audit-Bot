@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Social Media Audit Bot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<style>
+:root{--bg-base:#f0f2f5;--bg-surface:#f8f9fb;--bg-elevated:#e8eaef;--accent:#f43f5e;--accent-hover:#e11d48;--accent-glow:rgba(244,63,94,0.12);--accent-muted:rgba(244,63,94,0.06);--text-main:#111827;--text-muted:#6b7280;--text-dim:#9ca3af;--border-light:rgba(0,0,0,0.06);--border-highlight:rgba(0,0,0,0.1)}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{background:var(--bg-base);color:var(--text-muted);font-family:"DM Sans",sans-serif;line-height:1.7;overflow-x:hidden}
+h1,h2,h3,h4{font-family:"Outfit",sans-serif;color:var(--text-main);line-height:1.2}
+a{color:inherit;text-decoration:none;transition:all .3s ease}
+.noise{position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.015}
+.container{max-width:1100px;margin:0 auto;padding:0 2rem}
+.navbar{position:fixed;top:0;left:0;width:100%;height:64px;background:rgba(240,242,245,0.85);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;padding:0 4rem;z-index:999}
+.nav-brand{font-family:"Outfit",sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-main);display:flex;align-items:center;gap:.5rem}
+.nav-brand i{color:var(--accent);font-size:1.3rem}
+.nav-links{display:flex;gap:2rem}
+.nav-link{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);padding:.5rem 0}
+.nav-link:hover{color:var(--text-main)}
+.nav-cta{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:.55rem 1.25rem;border-radius:5px;background:var(--accent);color:#fff;border:none;cursor:pointer;transition:all .3s;display:flex;align-items:center;gap:.4rem}
+.nav-cta:hover{background:var(--accent-hover);transform:translateY(-1px);box-shadow:0 4px 20px rgba(244,63,94,0.3)}
+.mobile-toggle{display:none;color:var(--text-main);font-size:1.5rem;background:none;border:none;cursor:pointer}
+.hero{padding:180px 0 120px;text-align:center;position:relative;background:linear-gradient(180deg,var(--bg-base) 0%,var(--bg-elevated) 100%)}
+.hero-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(244,63,94,0.06) 0%,transparent 60%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;font-family:"DM Mono",monospace;font-size:.75rem;font-weight:500;color:var(--accent);text-transform:uppercase;letter-spacing:.15em;padding:.5rem 1.25rem;border-radius:100px;background:var(--accent-muted);border:1px solid rgba(244,63,94,0.15);margin-bottom:2rem}
+.hero h1{font-size:clamp(3rem,6vw,4.5rem);font-weight:900;letter-spacing:-.04em;margin-bottom:1.5rem;line-height:1.05}
+.hero h1 .accent{color:var(--accent)}
+.hero-sub{font-size:1.2rem;max-width:600px;margin:0 auto 2.5rem;line-height:1.7}
+.hero-platforms{display:flex;justify-content:center;gap:2rem;margin-bottom:3rem}
+.platform-icon{display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--text-dim);font-size:.75rem;font-weight:500;transition:all .3s}
+.platform-icon i{font-size:2rem;transition:color .3s}
+.platform-icon:hover{color:var(--text-main)}
+.platform-icon:hover i{color:var(--accent)}
+.hero-actions{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:1rem 2rem;border-radius:6px;font-weight:700;font-size:.9rem;cursor:pointer;transition:all .3s;text-transform:uppercase;letter-spacing:.05em;border:none;font-family:inherit}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 20px rgba(244,63,94,0.25)}
+.btn-primary:hover{background:var(--accent-hover);transform:translateY(-2px);box-shadow:0 6px 30px rgba(244,63,94,0.4)}
+.btn-outline{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.btn-outline:hover{background:var(--accent-muted);transform:translateY(-2px)}
+section{padding:100px 0}
+.section-label{font-family:"DM Mono",monospace;font-size:.75rem;color:var(--accent);text-transform:uppercase;letter-spacing:.15em;margin-bottom:1rem;text-align:center}
+.section-title{font-size:clamp(2rem,4vw,2.75rem);font-weight:800;text-align:center;margin-bottom:1rem;letter-spacing:-.03em}
+.section-desc{text-align:center;max-width:600px;margin:0 auto 4rem;font-size:1.05rem}
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;position:relative}
+.steps-grid::before{content:"";position:absolute;top:40px;left:12%;right:12%;height:2px;background:var(--border-light)}
+.step{text-align:center;position:relative;z-index:1}
+.step-number{width:56px;height:56px;border-radius:50%;background:var(--bg-surface);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-family:"Outfit",sans-serif;font-size:1.25rem;font-weight:800;color:var(--accent);margin:0 auto 1.5rem;box-shadow:0 0 20px var(--accent-glow)}
+.step h4{font-size:1.1rem;margin-bottom:.5rem}
+.step p{font-size:.88rem;max-width:240px;margin:0 auto}
+.features-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem}
+.feature-card{background:var(--bg-surface);border:1px solid var(--border-light);border-radius:12px;padding:2rem;display:flex;gap:1.25rem;align-items:flex-start;transition:all .4s ease;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.feature-card:hover{border-color:rgba(244,63,94,0.25);transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,0.08),0 0 15px var(--accent-glow)}
+.feature-icon{width:48px;height:48px;border-radius:10px;flex-shrink:0;background:var(--accent-muted);border:1px solid rgba(244,63,94,0.15);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--accent)}
+.feature-card h4{font-size:1.05rem;margin-bottom:.35rem}
+.feature-card p{font-size:.9rem;line-height:1.6}
+#pricing{background:var(--bg-elevated);border-top:1px solid var(--border-light);border-bottom:1px solid var(--border-light)}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.pricing-card{background:var(--bg-surface);border:1px solid var(--border-light);border-radius:14px;padding:2.5rem 2rem;display:flex;flex-direction:column;transition:all .4s ease;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.pricing-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,0.08)}
+.pricing-card.featured{border-color:var(--accent);box-shadow:0 0 30px var(--accent-glow),0 4px 20px rgba(0,0,0,0.06)}
+
+.plan-name{font-family:"DM Mono",monospace;font-size:.75rem;font-weight:500;color:var(--accent);text-transform:uppercase;letter-spacing:.15em;margin-bottom:.75rem}
+.plan-price{font-family:"Outfit",sans-serif;font-size:3rem;font-weight:800;color:var(--text-main);line-height:1;margin-bottom:.25rem}
+.plan-price span{font-size:1rem;font-weight:400;color:var(--text-muted)}
+.plan-desc{font-size:.9rem;margin-bottom:2rem;padding-bottom:2rem;border-bottom:1px solid var(--border-light)}
+.plan-features{list-style:none;margin-bottom:2rem;flex:1}
+.plan-features li{font-size:.9rem;padding:.5rem 0;display:flex;align-items:center;gap:.75rem}
+.plan-features li i{color:var(--accent);font-size:1.1rem;flex-shrink:0}
+.plan-features li.disabled{color:var(--text-dim)}
+.plan-features li.disabled i{color:var(--text-dim)}
+.plan-delivery{font-family:"DM Mono",monospace;font-size:.75rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.1em;display:flex;align-items:center;gap:.5rem}
+.plan-delivery i{color:var(--accent)}
+.sample-wrapper{background:var(--bg-surface);border:1px solid var(--border-light);border-radius:14px;padding:3.5rem;display:flex;flex-direction:column;gap:2rem;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.sample-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.sample-header h3{font-size:1.75rem}
+.sample-meta{display:flex;gap:1.5rem;font-family:"DM Mono",monospace;font-size:.75rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em}
+.sample-meta span{display:flex;align-items:center;gap:.4rem}
+.sample-meta i{color:var(--accent)}
+.report-section{margin-bottom:1.5rem}
+.report-tag{display:inline-flex;align-items:center;gap:.4rem;font-family:"DM Mono",monospace;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.12em;padding:.35rem .9rem;border-radius:100px;margin-bottom:1rem}
+.report-tag.good{background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2)}
+.report-tag.bad{background:rgba(244,63,94,0.08);color:var(--accent);border:1px solid rgba(244,63,94,0.15)}
+.report-tag.improve{background:rgba(59,130,246,0.08);color:#3b82f6;border:1px solid rgba(59,130,246,0.15)}
+.report-section h4{font-size:1.05rem;margin-bottom:.5rem}
+.report-section p{font-size:.92rem;line-height:1.7;margin-bottom:.75rem}
+.report-quote{border-left:3px solid var(--border-highlight);padding-left:1rem;font-style:italic;color:var(--text-muted);font-size:.88rem;margin:.75rem 0}
+.report-stat{font-family:"DM Mono",monospace;font-size:.8rem;color:var(--text-dim);margin-bottom:.5rem}
+.report-stat strong{color:var(--text-main)}
+.report-list{list-style:none;padding:0;margin:.75rem 0}
+.report-list li{font-size:.9rem;padding:.35rem 0;padding-left:1.25rem;position:relative}
+.report-list li::before{content:"\25B8";position:absolute;left:0;color:var(--accent);font-weight:bold}
+.report-divider{height:1px;background:var(--border-light);margin:2rem 0}
+.sample-footer{display:flex;justify-content:space-between;align-items:center;padding-top:2rem;border-top:1px solid var(--border-light);flex-wrap:wrap;gap:1rem}
+.sample-stats{display:flex;gap:2rem}
+.stat-item{text-align:center}
+.stat-number{font-family:"Outfit",sans-serif;font-size:1.75rem;font-weight:800;color:var(--accent);display:block}
+.stat-label{font-size:.7rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.1em}
+.sample-note{font-family:"DM Mono",monospace;font-size:.7rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;display:flex;align-items:center;gap:.4rem}
+.sample-note i{color:var(--accent)}
+.faq-list{max-width:750px;margin:0 auto}
+.faq-item{border-bottom:1px solid var(--border-light);padding:1.5rem 0;cursor:pointer}
+.faq-question{display:flex;justify-content:space-between;align-items:center;font-family:"Outfit",sans-serif;font-weight:600;font-size:1.05rem;color:var(--text-main);transition:color .3s}
+.faq-question:hover{color:var(--accent)}
+.faq-question i{font-size:1.25rem;color:var(--accent);transition:transform .3s}
+.faq-item.open .faq-question i{transform:rotate(45deg)}
+.faq-answer{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .4s ease;font-size:.95rem;line-height:1.7}
+.faq-item.open .faq-answer{max-height:200px;padding-top:1rem}
+.cta-section{text-align:center;padding:100px 0 120px}
+.cta-section h2{font-size:clamp(2rem,4vw,2.5rem);margin-bottom:1rem}
+.cta-section p{max-width:500px;margin:0 auto 2.5rem;font-size:1.05rem}
+.email-link{color:var(--accent);font-size:1.25rem;font-weight:700;transition:color .3s}
+.email-link:hover{color:var(--accent-hover)}
+footer{padding:2rem 4rem;text-align:center;border-top:1px solid var(--border-light);font-size:.8rem;background:var(--bg-elevated)}
+footer a{color:var(--accent)}footer a:hover{color:var(--accent-hover)}
+.reveal{opacity:0;transform:translateY(25px);transition:all .7s cubic-bezier(0.16,1,0.3,1)}
+.reveal.active{opacity:1;transform:translateY(0)}
+.delay-1{transition-delay:.1s}.delay-2{transition-delay:.2s}.delay-3{transition-delay:.3s}.delay-4{transition-delay:.4s}
+@media(max-width:1024px){.pricing-grid{grid-template-columns:1fr;max-width:450px;margin:0 auto}.pricing-card.featured{order:-1}.steps-grid{grid-template-columns:repeat(2,1fr);gap:2rem}}
+@media(max-width:768px){.navbar{padding:0 1.5rem}.nav-links{display:none}.mobile-toggle{display:block}.features-grid{grid-template-columns:1fr}.hero{padding:140px 0 80px}.sample-wrapper{padding:2rem}.steps-grid{grid-template-columns:1fr}.steps-grid::before{display:none}}
+@media(max-width:480px){.navbar{padding:0 1rem}.hero-platforms{gap:1.25rem}section{padding:70px 0}}
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<nav class="navbar">
+<div class="nav-brand"><i class="ph ph-magnifying-glass-plus"></i> Social Media Audit Bot</div>
+<button class="mobile-toggle" id="mobileToggle" aria-label="Menu"><i class="ph ph-list"></i></button>
+<div class="nav-links" id="navLinks">
+<a href="#how" class="nav-link">How It Works</a>
+<a href="#features" class="nav-link">What You Get</a>
+<a href="#pricing" class="nav-link">Pricing</a>
+<a href="#faq" class="nav-link">FAQ</a>
+</div>
+<a href="#cta" class="nav-cta">Get Audit <i class="ph ph-arrow-right"></i></a>
+</nav>
+<section class="hero">
+<div class="hero-glow"></div>
+<div class="container">
+<div class="hero-badge reveal"><i class="ph ph-robot"></i> AI-Powered Analysis</div>
+<h1 class="reveal delay-1">Know exactly why<br>your content <span class="accent">isn't growing.</span></h1>
+<p class="hero-sub reveal delay-2">Get a detailed, data-driven audit of your social media account with actionable recommendations to boost engagement, reach, and followers.</p>
+<div class="hero-platforms reveal delay-3">
+<div class="platform-icon"><i class="ph ph-instagram-logo"></i> Instagram</div>
+<div class="platform-icon"><i class="ph ph-youtube-logo"></i> YouTube</div>
+<div class="platform-icon"><i class="ph ph-tiktok-logo"></i> TikTok</div>
+</div>
+<div class="hero-actions reveal delay-4">
+<a href="#pricing" class="btn btn-primary">See Pricing <i class="ph ph-arrow-down"></i></a>
+<a href="#how" class="btn btn-outline">How It Works</a>
+</div>
+</div>
+</section>
+<section id="how">
+<div class="container">
+<div class="section-label reveal">Process</div>
+<h2 class="section-title reveal">Four steps to growth</h2>
+<p class="section-desc reveal">No calls, no back-and-forth. Just send your handle and get your report.</p>
+<div class="steps-grid">
+<div class="step reveal delay-1"><div class="step-number">1</div><h4>Send Your Handle</h4><p>Email me your social media username, platform, and which posts or videos you want analyzed.</p></div>
+<div class="step reveal delay-2"><div class="step-number">2</div><h4>Data Collection</h4><p>Your profile, content, engagement metrics, and competitor benchmarks are gathered and processed using proprietary tools.</p></div>
+<div class="step reveal delay-3"><div class="step-number">3</div><h4>Expert Review</h4><p>I personally review every data point, analyze the metrics, and craft tailored recommendations based on your specific niche and goals.</p></div>
+<div class="step reveal delay-4"><div class="step-number">4</div><h4>Get Your Report</h4><p>Receive a detailed PDF report with scores, benchmarks, and specific actions to grow your account.</p></div>
+</div>
+</div>
+</section>
+<section id="features">
+<div class="container">
+<div class="section-label reveal">What's Included</div>
+<h2 class="section-title reveal">Every audit covers</h2>
+<p class="section-desc reveal">A comprehensive breakdown of what's working, what's not, and exactly what to fix.</p>
+<div class="features-grid">
+<div class="feature-card reveal"><div class="feature-icon"><i class="ph ph-image-square"></i></div><div><h4>Profile &amp; Branding Review</h4><p>Analysis of your bio, profile picture, highlights, and overall first impression.</p></div></div>
+<div class="feature-card reveal delay-1"><div class="feature-icon"><i class="ph ph-article"></i></div><div><h4>Content Quality Analysis</h4><p>Evaluation of titles, thumbnails, hooks, captions, and structure against best practices.</p></div></div>
+<div class="feature-card reveal delay-2"><div class="feature-icon"><i class="ph ph-chart-line-up"></i></div><div><h4>Engagement Metrics</h4><p>Deep dive into likes, comments, shares, and saves with engagement rate vs niche averages.</p></div></div>
+<div class="feature-card reveal delay-3"><div class="feature-icon"><i class="ph ph-users-three"></i></div><div><h4>Competitor Benchmarking</h4><p>Comparison with 3-5 similar accounts to identify gaps and winning strategies.</p></div></div>
+<div class="feature-card reveal"><div class="feature-icon"><i class="ph ph-target"></i></div><div><h4>Actionable Recommendations</h4><p>Prioritized, concrete next steps you can implement today.</p></div></div>
+<div class="feature-card reveal delay-1"><div class="feature-icon"><i class="ph ph-file-pdf"></i></div><div><h4>Professional PDF Report</h4><p>Everything in a clean, formatted document you can reference or share with your team.</p></div></div>
+</div>
+</div>
+</section>
+<section id="pricing">
+<div class="container">
+<div class="section-label reveal">Pricing</div>
+<h2 class="section-title reveal">Choose your audit</h2>
+<p class="section-desc reveal">One-time payment. No subscriptions. No hidden fees.</p>
+<div class="pricing-grid">
+<div class="pricing-card reveal delay-1"><div class="plan-name">Starter</div><div class="plan-price">$29 <span>USD</span></div><p class="plan-desc">Deep dive into 1 post or video.</p><ul class="plan-features"><li><i class="ph-fill ph-check-circle"></i> 1 post / video analyzed</li><li><i class="ph-fill ph-check-circle"></i> Profile &amp; branding review</li><li><i class="ph-fill ph-check-circle"></i> Engagement rate analysis</li><li><i class="ph-fill ph-check-circle"></i> Comment &amp; like sentiment breakdown</li><li><i class="ph-fill ph-check-circle"></i> Actionable recommendations</li><li><i class="ph-fill ph-check-circle"></i> PDF report</li><li class="disabled"><i class="ph ph-x-circle"></i> Competitor benchmarking</li><li class="disabled"><i class="ph ph-x-circle"></i> Content calendar suggestions</li><li class="disabled"><i class="ph ph-x-circle"></i> Growth strategy plan</li></ul><div class="plan-delivery"><i class="ph ph-clock"></i> Delivered in 48 hours</div></div>
+<div class="pricing-card featured reveal delay-2"><div class="plan-name">Pro</div><div class="plan-price">$59 <span>USD</span></div><p class="plan-desc">Analyze 3 posts or videos + competitor insights.</p><ul class="plan-features"><li><i class="ph-fill ph-check-circle"></i> 3 posts / videos analyzed</li><li><i class="ph-fill ph-check-circle"></i> Everything in Starter</li><li><i class="ph-fill ph-check-circle"></i> Content quality deep dive</li><li><i class="ph-fill ph-check-circle"></i> 3 competitor benchmarks</li><li><i class="ph-fill ph-check-circle"></i> Content calendar suggestions</li><li><i class="ph-fill ph-check-circle"></i> Cross-post performance comparison</li><li><i class="ph-fill ph-check-circle"></i> PDF report</li><li class="disabled"><i class="ph ph-x-circle"></i> Growth strategy plan</li><li class="disabled"><i class="ph ph-x-circle"></i> Hashtag &amp; SEO strategy</li></ul><div class="plan-delivery"><i class="ph ph-clock"></i> Delivered in 48 hours</div></div>
+<div class="pricing-card reveal delay-3"><div class="plan-name">Premium</div><div class="plan-price">$99 <span>USD</span></div><p class="plan-desc">Full account audit — 9 posts or videos + growth plan.</p><ul class="plan-features"><li><i class="ph-fill ph-check-circle"></i> 9 posts / videos analyzed</li><li><i class="ph-fill ph-check-circle"></i> Everything in Pro</li><li><i class="ph-fill ph-check-circle"></i> 5 competitor benchmarks</li><li><i class="ph-fill ph-check-circle"></i> Hashtag &amp; SEO strategy</li><li><i class="ph-fill ph-check-circle"></i> 30-day growth action plan</li><li><i class="ph-fill ph-check-circle"></i> Content trends analysis</li><li><i class="ph-fill ph-check-circle"></i> Priority delivery</li><li><i class="ph-fill ph-check-circle"></i> PDF report</li></ul><div class="plan-delivery"><i class="ph ph-clock"></i> Delivered in 24 hours</div></div>
+</div>
+</div>
+</section>
+<section id="sample">
+<div class="container">
+<div class="section-label reveal">Real Example</div>
+<h2 class="section-title reveal">What your report looks like</h2>
+<p class="section-desc reveal">A real extract from an actual audit. Client name has been changed for privacy.</p>
+<div class="sample-wrapper reveal">
+<div class="sample-header"><h3>Video Feedback Report — Comment Analysis</h3><div class="sample-meta"><span><i class="ph ph-user"></i> MrDoc</span><span><i class="ph ph-calendar-blank"></i> 2025-07-20</span></div></div>
+<div class="report-section"><p>This report delivers a concise, data-driven analysis of viewer comments organized into three core themes — <strong>Good Things</strong>, <strong>Bad Things</strong>, and <strong>Things to Improve</strong>. Each includes sentiment overviews, representative quotes, and quantitative insights.</p></div>
+<div class="report-divider"></div>
+<div class="report-section"><div class="report-tag good"><i class="ph ph-check-circle"></i> Good Things</div><h4>Humor Impact</h4><p>The comedic elements resonated strongly with viewers, creating an engaging experience.</p><div class="report-stat"><strong>45%</strong> of positive comments mentioned humor or entertainment value</div><div class="report-quote">"The private jet survival challenge had me rolling! Only MrDoc could make something so luxurious this funny!"</div><h4>Production Excellence</h4><p>Superior production quality and visuals garnered significant praise.</p><div class="report-stat"><strong>35%</strong> of viewers highlighted professional-grade aesthetics</div><div class="report-quote">"Getting Hollywood blockbuster vibes from this! The cinematography is getting better with each video."</div></div>
+<div class="report-divider"></div>
+<div class="report-section"><div class="report-tag bad"><i class="ph ph-warning-circle"></i> Bad Things</div><h4>Price Point Criticism</h4><div class="report-stat"><strong>32%</strong> of negative comments targeted pricing structure</div><div class="report-quote">"No way anyone's paying that much for 2 years, completely unrealistic pricing"</div><h4>Feasibility Concerns</h4><div class="report-stat"><strong>28%</strong> questioned practical implementation</div><div class="report-quote">"Cool concept but there's no way this would actually work in real life"</div><ul class="report-list"><li>Severe pricing structure backlash</li><li>Widespread skepticism about viability</li><li>Growing credibility concerns among core audience</li><li>Potential damage to brand trust</li></ul></div>
+<div class="report-divider"></div>
+<div class="report-section"><div class="report-tag improve"><i class="ph ph-arrow-circle-up"></i> Things to Improve</div><h4>Content Clarity</h4><div class="report-stat"><strong>35%</strong> of inquiries centered around logistics and rules</div><div class="report-quote">"Would love to know if winners can bring family members along"</div><h4>Actionable Recommendations</h4><ul class="report-list"><li>Create detailed FAQ sections for challenge videos</li><li>Launch pilot long-form content series (3-month documentary-style)</li><li>Develop hybrid content strategy blending challenges with narratives</li><li>Implement progress tracking elements for viewer retention</li></ul></div>
+<div class="sample-footer"><div class="sample-stats"><div class="stat-item"><span class="stat-number">20+</span><span class="stat-label">Pages</span></div><div class="stat-item"><span class="stat-number">50+</span><span class="stat-label">Data Points</span></div><div class="stat-item"><span class="stat-number">15+</span><span class="stat-label">Action Items</span></div></div><div class="sample-note"><i class="ph ph-info"></i> Extract from a real comment &amp; like/dislike analysis report</div></div>
+</div>
+</div>
+</section>
+<section id="faq">
+<div class="container">
+<div class="section-label reveal">FAQ</div>
+<h2 class="section-title reveal">Common questions</h2>
+<p class="section-desc reveal">Everything you need to know before ordering.</p>
+<div class="faq-list">
+<div class="faq-item reveal"><div class="faq-question">What information do I need to provide? <i class="ph ph-plus"></i></div><div class="faq-answer">Just send the direct link(s) to the post(s) or video(s) you want audited. If you have specific competitors you'd like to be compared against, include them — otherwise I'll find the best benchmarks for your niche.</div></div>
+<div class="faq-item reveal"><div class="faq-question">Does my account need to be public? <i class="ph ph-plus"></i></div><div class="faq-answer">Yes, the audit needs access to publicly available content and metrics. Private accounts can't be audited. You can set it back to private after.</div></div>
+<div class="faq-item reveal"><div class="faq-question">Do you need my password or login? <i class="ph ph-plus"></i></div><div class="faq-answer">Absolutely not. The audit is performed entirely from publicly available data. I will never ask for your password or any private access.</div></div>
+<div class="faq-item reveal"><div class="faq-question">How do I pay? <i class="ph ph-plus"></i></div><div class="faq-answer">After you email me, I'll get in touch personally. I'll send over a contract outlining the scope and terms. Once the contract is signed and the agreed payment is received, I'll begin working on your audit.</div></div>
+<div class="faq-item reveal"><div class="faq-question">Can I get a refund? <i class="ph ph-plus"></i></div><div class="faq-answer">Since the report requires time and resources, refunds aren't available once started. If the report isn't delivered on time, you'll receive a full refund.</div></div>
+<div class="faq-item reveal"><div class="faq-question">Can I audit a competitor's account? <i class="ph ph-plus"></i></div><div class="faq-answer">Yes! As long as the account is public, I can audit any account. Many clients order audits of competitors to understand winning strategies.</div></div>
+</div>
+</div>
+</section>
+<section class="cta-section" id="cta">
+<div class="container">
+<h2 class="reveal">Ready to grow?</h2>
+<p class="reveal delay-1">Stop guessing what works. Get data-driven insights tailored to your account.</p>
+<p class="reveal delay-2"><a href="mailto:gonzalo.rcarrato@gmail.com?subject=Audit%20Inquiry" class="email-link">gonzalo.rcarrato@gmail.com</a></p>
+</div>
+</section>
+<footer><p>&copy; <span id="year"></span> Gonzalo. All rights reserved.</p></footer>
+<script>
+document.getElementById("year").textContent=new Date().getFullYear();
+var obs=new IntersectionObserver(function(e){e.forEach(function(e){if(e.isIntersecting)e.target.classList.add("active")})},{threshold:.12});
+document.querySelectorAll(".reveal").forEach(function(el){obs.observe(el)});
+document.querySelectorAll(".faq-item").forEach(function(item){item.querySelector(".faq-question").addEventListener("click",function(){var o=item.classList.contains("open");document.querySelectorAll(".faq-item").forEach(function(i){i.classList.remove("open")});if(!o)item.classList.add("open")})});
+var toggle=document.getElementById("mobileToggle"),links=document.getElementById("navLinks");
+if(toggle&&links){toggle.addEventListener("click",function(){var o=links.style.display==="flex";links.style.display=o?"none":"flex";links.style.flexDirection="column";links.style.position="absolute";links.style.top="64px";links.style.left="0";links.style.width="100%";links.style.background="var(--bg-surface)";links.style.padding="1.5rem 2rem";links.style.borderBottom="1px solid var(--border-light)";links.style.gap="1.25rem";toggle.querySelector("i").classList.toggle("ph-list");toggle.querySelector("i").classList.toggle("ph-x")})}
+</script>
+</body>
+</html>
